@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapestry Segmentation Analyzer</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.arcgis.com/4.27/"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🎯 Tapestry Segmentation Analyzer</h1>
+                <p>Discover demographic insights with Esri's Tapestry Segmentation</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <div class="panel-section">
+                    <h2>📍 Address Lookup</h2>
+                    <div class="input-group">
+                        <input type="text" id="addressInput" placeholder="Enter an address (e.g., 123 Main St, New York, NY)" />
+                        <button id="searchAddressBtn" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>📊 CSV Upload</h2>
+                    <div class="input-group">
+                        <input type="file" id="csvFileInput" accept=".csv" />
+                        <button id="processCsvBtn" class="btn btn-secondary">Process CSV</button>
+                    </div>
+                    <div class="csv-info">
+                        <p><strong>CSV Format:</strong> latitude,longitude,description (optional)</p>
+                        <p><strong>Example:</strong> 40.7128,-74.0060,New York City</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>📋 Recent Searches</h2>
+                    <div id="recentSearches" class="recent-searches">
+                        <p class="empty-state">No recent searches</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="mapView" class="map-view"></div>
+                <div class="map-controls">
+                    <button id="clearMapBtn" class="btn btn-outline">Clear Map</button>
+                    <button id="exportResultsBtn" class="btn btn-outline">Export Results</button>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel" id="resultsPanel">
+                <div class="panel-header">
+                    <h2>📈 Tapestry Results</h2>
+                    <button id="closeResultsBtn" class="btn-close">×</button>
+                </div>
+                <div id="resultsContent" class="results-content">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Analyzing location...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by <a href="https://developers.arcgis.com/javascript/" target="_blank">ArcGIS JavaScript API</a> | 
+               Data from <a href="https://www.esri.com/en-us/arcgis/products/tapestry-segmentation/overview" target="_blank">Esri Tapestry Segmentation</a></p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Processing...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
