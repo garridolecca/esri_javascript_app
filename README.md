@@ -17,19 +17,28 @@ A modern web application that allows users to enter a ZIP code and get detailed 
 
 - A modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection (for ArcGIS API and GeoEnrichment services)
+- Node.js (for local development server - recommended)
 - ArcGIS API key (already configured)
 
-### Installation
+### Quick Start (Recommended)
 
-1. **Clone or download** this repository to your local machine
-2. **Open** `index.html` in your web browser
-3. **Enter a ZIP code** to start analyzing!
+1. **Start the local server**: Double-click `start-server.bat` or run `node server.js`
+2. **Open your browser**: Go to `http://localhost:3000`
+3. **Enter a ZIP code** and click "Analyze ZIP Code"
+
+### Alternative: Direct File Opening
+
+1. **Open** `index.html` directly in your web browser
+2. **Note**: Some map features may not work due to CORS restrictions
 
 ### Running Locally
 
 You can run this application using any local web server:
 
 ```bash
+# Using the included Node.js server (recommended)
+node server.js
+
 # Using Python 3
 python -m http.server 8000
 
@@ -37,9 +46,9 @@ python -m http.server 8000
 php -S localhost:8000
 ```
 
-Then open `http://localhost:8000` in your browser.
+Then open `http://localhost:3000` (or your chosen port) in your browser.
 
-**Note**: Simply opening `index.html` directly in your browser will also work!
+**Note**: Using a local web server is recommended for the best experience!
 
 ## 📖 Usage
 
@@ -86,7 +95,11 @@ Then open `http://localhost:8000` in your browser.
 ```
 esri_javascript_app/
 ├── index.html              # Main HTML file with app functionality
-└── README.md              # This file
+├── styles.css              # CSS styles for the application
+├── app.js                  # JavaScript functionality
+├── server.js               # Local development server
+├── start-server.bat        # Windows batch file to start server
+└── README.md               # This file
 ```
 
 ## 🔧 How It Works
@@ -148,14 +161,36 @@ Each ZIP code will show:
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 🆘 Support
+## 🆘 Support & Troubleshooting
 
-For issues or questions:
+### Common Issues
 
-1. Check the browser console for error messages
-2. Ensure you have a stable internet connection
-3. Verify the ZIP code is valid (5 digits)
-4. Try refreshing the page if the app doesn't load
+#### 1. Map Not Loading
+- **Solution**: Use the local web server (`start-server.bat`)
+- **Reason**: CORS restrictions prevent module loading from file:// URLs
+
+#### 2. "Map is not a constructor" Error
+- **Solution**: Access via `http://localhost:3000` instead of opening file directly
+- **Reason**: ES6 modules require proper HTTP server
+
+#### 3. API Key Issues
+- **Solution**: Check internet connection and API key validity
+- **Debug**: Look at console logs for specific error messages
+
+### Debug Information
+The app includes a debug panel that shows:
+- Map initialization status
+- API request status
+- Error messages and troubleshooting info
+- Test buttons for different map creation methods
+
+### For issues or questions:
+
+1. **Use the local server**: Double-click `start-server.bat`
+2. **Check the browser console** for error messages (F12)
+3. **Ensure you have a stable internet connection**
+4. **Verify the ZIP code is valid** (5 digits)
+5. **Try refreshing the page** if the app doesn't load
 
 ## 🔮 Future Enhancements
 
