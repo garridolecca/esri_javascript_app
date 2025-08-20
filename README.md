@@ -1,30 +1,27 @@
-# 🎯 Tapestry Segmentation Analyzer
+# 🗺️ Simple ArcGIS Map Display
 
-A modern web application built with the ArcGIS JavaScript API that allows users to analyze demographic insights using Esri's Tapestry Segmentation data. Users can enter addresses or upload CSV files with coordinates to get detailed demographic reports.
+A simple web application that displays an interactive map using the ArcGIS Maps SDK for JavaScript, following the official tutorial structure.
 
 ## ✨ Features
 
-- **Address Geocoding**: Enter any address and get instant Tapestry segmentation analysis
-- **CSV Batch Processing**: Upload CSV files with coordinates for bulk analysis
-- **Interactive Map**: Visualize locations with an interactive ArcGIS map
-- **Detailed Reports**: View comprehensive demographic and segmentation data
-- **Recent Searches**: Track and reuse previous searches
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Export Functionality**: Export results for further analysis
+- **Interactive Map**: Full-screen topographic map
+- **Zoom Controls**: Built-in zoom widget
+- **Modern ArcGIS SDK**: Uses the latest ArcGIS Maps SDK 4.33
+- **Map Components**: Modern web components approach
+- **Responsive Design**: Works on all devices
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - A modern web browser (Chrome, Firefox, Safari, Edge)
-- Internet connection (for ArcGIS API and geocoding services)
-- Optional: ArcGIS Developer Account for enhanced features
+- Internet connection (for ArcGIS API and basemap services)
 
 ### Installation
 
 1. **Clone or download** this repository to your local machine
 2. **Open** `index.html` in your web browser
-3. **Start analyzing** locations immediately!
+3. **Enjoy** the interactive map!
 
 ### Running Locally
 
@@ -43,103 +40,93 @@ php -S localhost:8000
 
 Then open `http://localhost:8000` in your browser.
 
-## 📖 Usage Guide
+## 📖 Usage
 
-### Address Lookup
+The application displays a topographic map centered on the Santa Monica Mountains in California. You can:
 
-1. **Enter an address** in the search box (e.g., "123 Main St, New York, NY")
-2. **Click "Search"** or press Enter
-3. **View results** in the interactive map and detailed report panel
-
-### CSV Upload
-
-1. **Prepare your CSV file** with the following format:
-   ```
-   latitude,longitude,description
-   40.7128,-74.0060,New York City
-   34.0522,-118.2437,Los Angeles
-   ```
-
-2. **Upload the file** using the file input
-3. **Click "Process CSV"** to analyze all locations
-4. **Review batch results** in the results panel
-
-### Understanding Results
-
-The application provides:
-
-- **Tapestry Segments**: Demographic classifications with percentages
-- **Demographics**: Key statistics like median age, income, education level
-- **Interactive Map**: Visual representation of analyzed locations
-- **Recent Searches**: Quick access to previous analyses
+- **Zoom in/out** using the zoom controls or mouse wheel
+- **Pan around** by clicking and dragging
+- **View topographic features** like mountains, valleys, and water bodies
 
 ## 🛠️ Technical Details
 
 ### Built With
 
-- **ArcGIS JavaScript API 4.27**: For mapping and geospatial functionality
-- **Vanilla JavaScript**: Modern ES6+ features
-- **CSS3**: Responsive design with modern styling
-- **HTML5**: Semantic markup
+- **ArcGIS Maps SDK 4.33**: Latest version of the JavaScript API
+- **Map Components**: Modern web components for easy integration
+- **Calcite Design System**: Professional UI components (loaded but not used in this simple version)
+- **Topographic Basemap**: Detailed terrain and feature information
 
 ### Key Components
 
-- **Geocoding**: Uses ArcGIS World Geocoding Service
-- **Mapping**: Interactive 2D map with custom graphics
-- **Data Processing**: Client-side CSV parsing and coordinate validation
-- **Local Storage**: Saves recent searches for convenience
+- **`<arcgis-map>`**: Main map component with basemap and view settings
+- **`<arcgis-zoom>`**: Zoom in/out controls
+- **API Key Authentication**: Secure access to ArcGIS services
 
 ### API Services Used
 
-- **ArcGIS World Geocoding Service**: Address to coordinate conversion
-- **ArcGIS Basemaps**: Street vector basemap
-- **Tapestry Segmentation**: Demographic classification (simulated for demo)
+- **ArcGIS Basemaps**: Topographic basemap layer
+- **ArcGIS Location Platform**: Authentication and services
 
 ## 📁 File Structure
 
 ```
 esri_javascript_app/
-├── index.html              # Main HTML file
-├── styles.css              # CSS styles and responsive design
-├── app.js                  # Main JavaScript application
-├── sample_coordinates.csv  # Sample CSV file for testing
-└── README.md              # This file
+├── index.html              # Main HTML file with map
+├── sample_coordinates.csv  # Sample CSV file (from previous version)
+├── package.json           # Project configuration
+└── README.md             # This file
 ```
 
 ## 🔧 Customization
 
-### Adding Real Tapestry Data
+### Changing the Basemap
 
-To connect to real Tapestry Segmentation data:
+You can change the basemap by modifying the `basemap` attribute in the `<arcgis-map>` component:
 
-1. **Get ArcGIS credentials** from [ArcGIS Developer](https://developers.arcgis.com/)
-2. **Update the `loadTapestryLayer()` function** in `app.js`
-3. **Replace simulated data** in `getTapestryData()` with actual API calls
+```html
+<!-- Streets basemap -->
+<arcgis-map basemap="arcgis/streets-vector">
 
-### Styling Customization
+<!-- Satellite basemap -->
+<arcgis-map basemap="arcgis/satellite">
 
-- **Colors**: Modify CSS variables in `styles.css`
-- **Layout**: Adjust grid layouts and responsive breakpoints
-- **Components**: Customize button styles, panels, and animations
+<!-- Dark basemap -->
+<arcgis-map basemap="arcgis/dark-gray-vector">
+```
 
-### Adding Features
+### Changing the Location
 
-- **Export functionality**: Implement CSV/JSON export in `exportResults()`
-- **Additional demographics**: Extend the data model in `getTapestryData()`
-- **Map layers**: Add custom feature layers for enhanced visualization
+Modify the `center` and `zoom` attributes to change the initial view:
+
+```html
+<arcgis-map 
+  basemap="arcgis/topographic" 
+  center="-74.0060, 40.7128" 
+  zoom="10">
+```
+
+### Adding More Widgets
+
+You can add additional map widgets:
+
+```html
+<arcgis-map basemap="arcgis/topographic" center="-118.805, 34.027" zoom="13">
+  <arcgis-zoom position="top-left"></arcgis-zoom>
+  <arcgis-search position="top-right"></arcgis-search>
+  <arcgis-home position="top-left"></arcgis-home>
+  <arcgis-compass position="top-right"></arcgis-compass>
+</arcgis-map>
+```
 
 ## 🧪 Testing
 
-### Sample Data
+### Test Locations
 
-Use the included `sample_coordinates.csv` file to test the CSV upload functionality. It contains coordinates for major US cities.
-
-### Test Addresses
-
-Try these sample addresses:
-- "Times Square, New York, NY"
-- "Golden Gate Bridge, San Francisco, CA"
-- "Disney World, Orlando, FL"
+The map is currently centered on:
+- **Location**: Santa Monica Mountains, California
+- **Coordinates**: -118.805, 34.027
+- **Zoom Level**: 13 (neighborhood level)
 
 ## 📱 Browser Support
 
@@ -166,19 +153,20 @@ For issues or questions:
 
 1. Check the browser console for error messages
 2. Ensure you have a stable internet connection
-3. Verify your CSV format matches the required structure
+3. Verify the API key is valid
 4. Try refreshing the page if the map doesn't load
 
 ## 🔮 Future Enhancements
 
-- [ ] Real-time Tapestry data integration
-- [ ] Advanced filtering and search options
-- [ ] Custom map styling and themes
-- [ ] Data visualization charts and graphs
-- [ ] User accounts and saved analyses
-- [ ] API rate limiting and optimization
-- [ ] Offline functionality with cached data
+- [ ] Add search functionality
+- [ ] Add layer controls
+- [ ] Add drawing tools
+- [ ] Add measurement tools
+- [ ] Add print functionality
+- [ ] Add custom layers
 
 ---
 
-**Built with ❤️ using the ArcGIS JavaScript API**
+**Built with ❤️ using the ArcGIS Maps SDK for JavaScript**
+
+*This project follows the official [Display a map tutorial](https://developers.arcgis.com/javascript/latest/tutorials/display-a-map/) from Esri.*
