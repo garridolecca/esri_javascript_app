@@ -31,14 +31,13 @@ You can run this application using any local web server:
 # Using Python 3
 python -m http.server 8000
 
-# Using Node.js (if you have http-server installed)
-npx http-server
-
 # Using PHP
 php -S localhost:8000
 ```
 
 Then open `http://localhost:8000` in your browser.
+
+**Note**: Simply opening `index.html` directly in your browser will also work!
 
 ## 📖 Usage
 
@@ -73,9 +72,7 @@ The application displays a topographic map centered on the Santa Monica Mountain
 ```
 esri_javascript_app/
 ├── index.html              # Main HTML file with map
-├── sample_coordinates.csv  # Sample CSV file (from previous version)
-├── package.json           # Project configuration
-└── README.md             # This file
+└── README.md              # This file
 ```
 
 ## 🔧 Customization
