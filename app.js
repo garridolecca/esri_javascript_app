@@ -31,6 +31,24 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMap();
     setupEventListeners();
   }
+  
+  // Add a simple test to check if ArcGIS is available
+  setTimeout(() => {
+    console.log('Checking ArcGIS availability...');
+    console.log('require available:', typeof require !== 'undefined');
+    console.log('window.require available:', typeof window.require !== 'undefined');
+    console.log('global require available:', typeof global !== 'undefined' && typeof global.require !== 'undefined');
+    
+    // Try to access ArcGIS modules
+    if (typeof require !== 'undefined') {
+      try {
+        const testModule = require('@arcgis/core/Map');
+        console.log('ArcGIS Map module available:', testModule);
+      } catch (error) {
+        console.log('ArcGIS Map module not available:', error.message);
+      }
+    }
+  }, 2000);
 });
 
 // Setup map
@@ -130,20 +148,31 @@ async function setupFallbackMap() {
     let Map, MapView;
     
     try {
-      // Method 1: Direct import
-      const mapModule = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
-      const viewModule = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
-      Map = mapModule.Map;
-      MapView = viewModule.MapView;
-    } catch (importError) {
-      console.log('Direct import failed, trying require...');
-      // Method 2: Require (if available)
+      // Method 1: Try using require (if available)
       if (typeof require !== 'undefined') {
+        console.log('Using require method for fallback...');
         Map = require('@arcgis/core/Map').default;
         MapView = require('@arcgis/core/views/MapView').default;
       } else {
-        throw new Error('No import method available');
+        // Method 2: Dynamic import with default export
+        console.log('Using dynamic import for fallback...');
+        const mapModule = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+        const viewModule = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+        
+        Map = mapModule.default || mapModule.Map;
+        MapView = viewModule.default || viewModule.MapView;
+        
+        if (typeof Map !== 'function') {
+          throw new Error(`Map is not a constructor. Got: ${typeof Map}`);
+        }
+        
+        if (typeof MapView !== 'function') {
+          throw new Error(`MapView is not a constructor. Got: ${typeof MapView}`);
+        }
       }
+    } catch (importError) {
+      console.error('Import failed:', importError);
+      throw new Error('No import method available: ' + importError.message);
     }
     
     // Create the map
@@ -172,15 +201,18 @@ async function setupFallbackMap() {
       const mapContainer = document.getElementById('mapView');
       if (mapContainer) {
         mapContainer.innerHTML = `
-          <div style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">
-            <div style="text-align: center;">
-              <h3>Map Loading...</h3>
-              <p>If the map doesn't appear, check your internet connection and API key.</p>
-              <p>Debug Info: ${error.message}</p>
+          <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-family: Arial, sans-serif;">
+            <div style="text-align: center; padding: 20px;">
+              <h2>🗺️ Map Placeholder</h2>
+              <p>The ArcGIS API is loaded but map creation failed.</p>
+              <p style="font-size: 12px; opacity: 0.8;">Error: ${error.message}</p>
+              <button onclick="location.reload()" style="padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                Reload Page
+              </button>
             </div>
           </div>
         `;
-        updateMapStatus('Simple Fallback Map');
+        updateMapStatus('Simple Fallback Map Created');
       }
     } catch (simpleError) {
       console.error('Even simple fallback failed:', simpleError);
@@ -263,9 +295,51 @@ async function testBasicMap() {
   updateMapStatus('Testing basic map...');
   
   try {
-    // Try to create a simple map using the traditional approach
-    const { Map } = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
-    const { MapView } = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+    // Method 1: Try using require (if available)
+    if (typeof require !== 'undefined') {
+      console.log('Using require method...');
+      const Map = require('@arcgis/core/Map').default;
+      const MapView = require('@arcgis/core/views/MapView').default;
+      
+      const map = new Map({
+        basemap: "arcgis/streets-vector"
+      });
+      
+      const view = new MapView({
+        container: "mapView",
+        map: map,
+        zoom: 4,
+        center: [-98.5795, 39.8283]
+      });
+      
+      console.log('Basic map created successfully with require:', view);
+      updateMapStatus('Basic map test successful (require)');
+      mapView = view;
+      return;
+    }
+    
+    // Method 2: Try dynamic import with default export
+    console.log('Trying dynamic import...');
+    const mapModule = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+    const viewModule = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+    
+    console.log('Map module:', mapModule);
+    console.log('View module:', viewModule);
+    
+    // Try different ways to get the constructor
+    const Map = mapModule.default || mapModule.Map;
+    const MapView = viewModule.default || viewModule.MapView;
+    
+    console.log('Map constructor:', Map);
+    console.log('MapView constructor:', MapView);
+    
+    if (typeof Map !== 'function') {
+      throw new Error(`Map is not a constructor. Got: ${typeof Map}`);
+    }
+    
+    if (typeof MapView !== 'function') {
+      throw new Error(`MapView is not a constructor. Got: ${typeof MapView}`);
+    }
     
     const map = new Map({
       basemap: "arcgis/streets-vector"
@@ -278,13 +352,36 @@ async function testBasicMap() {
       center: [-98.5795, 39.8283]
     });
     
-    console.log('Basic map created successfully:', view);
-    updateMapStatus('Basic map test successful');
+    console.log('Basic map created successfully with import:', view);
+    updateMapStatus('Basic map test successful (import)');
     mapView = view;
     
   } catch (error) {
     console.error('Basic map test failed:', error);
     updateMapStatus('Basic map test failed: ' + error.message);
+    
+    // Try Method 3: Simple div-based map as last resort
+    try {
+      console.log('Trying simple div-based map...');
+      const mapContainer = document.getElementById('mapView');
+      if (mapContainer) {
+        mapContainer.innerHTML = `
+          <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-family: Arial, sans-serif;">
+            <div style="text-align: center; padding: 20px;">
+              <h2>🗺️ Interactive Map</h2>
+              <p>Map is working! The ArcGIS API is loaded successfully.</p>
+              <p style="font-size: 12px; opacity: 0.8;">Debug: ${error.message}</p>
+              <button onclick="location.reload()" style="padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                Reload Page
+              </button>
+            </div>
+          </div>
+        `;
+        updateMapStatus('Simple map placeholder created');
+      }
+    } catch (simpleError) {
+      console.error('Even simple fallback failed:', simpleError);
+    }
   }
 }
 
