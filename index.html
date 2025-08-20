@@ -302,11 +302,11 @@
     }
   </style>
 
-  <script>
-    var esriConfig = {
-      apiKey: "AAPT85fOqywZsicJupSmVSCGrhwxbRrmDP89Tr8jhIl2ka6wFYHD5U8QTHcRMCoBLPxtmd4ZZsi1qAu93ffXFVNJ2dEDmuUhqvdbo4ipgwNszTk3wtO873AO7638UOZstZ1EZ_sqvIyVCuqvdSBD5GKp3HJo1Ds3AgNWGC08ZxyPEUJBaoxVdCiQqy988YY5FRVZpPQuhowsndy7Bz5O38mMaH4Qug_wWGrqwL2MOkNF7Evr3SV4xr-nFD7MBIzD6SkJAT2_VQn5OsAR",
-    };
-  </script>
+      <script>
+      var esriConfig = {
+        apiKey: "AAPT85fOqywZsicJupSmVSCGrhwxbRrmDP89Tr8jhIl2ka6wFYHD5U8QTHcRMCoBLPxtmd4ZZsi1qAu93ffXFVNJ2dEDmuUhqvdbo4ipgwNszTk3wtO873AO7638UOZstZ1EZ_sqvIyVCuqvdSBD5GKp3HJo1Ds3AgNWGC08ZxyPEUJBaoxVdCiQqy988YY5FRVZpPQuhowsndy7Bz5O38mMaH4Qug_wWGrqwL2MOkNF7Evr3SV4xr-nFD7MBIzD6SkJAT2_VQn5OsAR"
+      };
+    </script>
 
   <!-- Load Calcite components from CDN -->
   <script type="module" src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"></script>
@@ -407,23 +407,64 @@
         </div>
       </div>
       
-      <!-- Map Container -->
-      <div class="map-container">
-        <arcgis-map 
-          id="mapView"
-          basemap="arcgis/streets-vector" 
-          center="-98.5795, 39.8283" 
-          zoom="4">
-          <arcgis-zoom position="top-left"></arcgis-zoom>
-          <arcgis-search position="top-right"></arcgis-search>
-          <arcgis-home position="top-left"></arcgis-home>
-        </arcgis-map>
-      </div>
+             <!-- Map Container -->
+       <div class="map-container">
+         <arcgis-map 
+           id="mapView"
+           basemap="arcgis/streets-vector" 
+           center="-98.5795, 39.8283" 
+           zoom="4">
+           <arcgis-zoom position="top-left"></arcgis-zoom>
+           <arcgis-search position="top-right"></arcgis-search>
+           <arcgis-home position="top-left"></arcgis-home>
+         </arcgis-map>
+         
+         <!-- Fallback message if map doesn't load -->
+         <div id="mapFallback" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 10px; text-align: center; display: none;">
+           <h3>🗺️ Map Loading...</h3>
+           <p>If the map doesn't appear, check:</p>
+           <ul style="text-align: left; margin: 10px 0;">
+             <li>Internet connection</li>
+             <li>Browser console for errors (F12)</li>
+             <li>API key validity</li>
+           </ul>
+           <button onclick="location.reload()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
+             Reload Page
+           </button>
+         </div>
+       </div>
     </div>
   </div>
 
   <!-- Simple JavaScript for ZIP code analysis -->
   <script>
+    // Check if ArcGIS is loaded
+    console.log('ArcGIS Config:', esriConfig);
+    console.log('ArcGIS API loaded:', typeof require !== 'undefined');
+    
+    // Check if Map Components are available
+    setTimeout(() => {
+      console.log('Map Components available:', typeof customElements !== 'undefined' && customElements.get('arcgis-map'));
+      const mapElement = document.getElementById('mapView');
+      console.log('Map element found:', mapElement);
+      if (mapElement) {
+        console.log('Map element tag name:', mapElement.tagName);
+        console.log('Map element attributes:', mapElement.attributes);
+        
+        // Check if map is actually visible
+        const rect = mapElement.getBoundingClientRect();
+        console.log('Map dimensions:', rect.width, 'x', rect.height);
+        
+        if (rect.width === 0 || rect.height === 0) {
+          console.log('Map has no dimensions, showing fallback');
+          document.getElementById('mapFallback').style.display = 'block';
+        }
+      } else {
+        console.log('Map element not found, showing fallback');
+        document.getElementById('mapFallback').style.display = 'block';
+      }
+    }, 3000);
+    
     // DOM elements
     const zipCodeInput = document.getElementById('zipCodeInput');
     const analyzeBtn = document.getElementById('analyzeBtn');
