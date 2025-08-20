@@ -8,140 +8,140 @@
   <!-- ArcGIS API Configuration -->
   <script>
     var esriConfig = {
-      apiKey: "AAPTxy8BH1VEsoebNVZXo8HurHudtAypLm328sIJojSUcoWK4iawKp87GbOMcJ3USNJwbndtRPTvMP1yU5FoDf4nM4Fa8hNK9FKRtBWb5h6L-KsYUy-_YYZiNWkKSEGwec1YXJfisQ7ES5SI1DIUWDQw_fbU5d7Dr2xKCHOrwBZAOpNZOF4Cyh06brHeismavZ0bmp3qv2hHvt-ShN2FnAT1_VQn5OsAR",
+      apiKey: "AAPTxy8BH1VEsoebNVZXo8HurHudtAypLm328sIJojSUcoWK4iawKp87GbOMcJ3USNJwbndtRPTvMP12Xu8gplWdFxyarXcZvh-Wi0yEb2PjnVog6aVtAPW_PJVrt1yU5FoDf4nM4Fa8hNK9FKRtBWb5h6L-KsYUy-_YYZiNWkKSEGwec1YXJfisQ7ES5SI1DIUWDQw_fbU5d7Dr2xKCHOrwBZAOpNZOF4Cyh06brHeismavZ0bmp3qv2hHvt-ShN2FnAT1_VQn5OsAR",
     };
   </script>
   
   <!-- ArcGIS CSS -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
   
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css" />
-  
-  <!-- ArcGIS JavaScript -->
-  <script src="https://js.arcgis.com/4.33/"></script>
-  
-  <!-- Calcite Components -->
-  <script type="module" src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"></script>
-  
-  <!-- Map Components -->
-  <script type="module" src="https://js.arcgis.com/4.33/map-components/"></script>
-</head>
+      <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css" />
+    
+    <!-- ArcGIS JavaScript -->
+    <script src="https://js.arcgis.com/4.33/"></script>
+    
+    <!-- Calcite Components -->
+    <script type="module" src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"></script>
+    
+    <!-- Map Components -->
+    <script type="module" src="https://js.arcgis.com/4.33/map-components/"></script>
+  </head>
 
-<body>
-  <div class="app-container">
-    <!-- Header -->
-    <header>
-      <h1>ArcGIS Data Enrichment App</h1>
-      <p>Tapestry Segmentation Analysis</p>
-    </header>
+  <body>
+    <div class="app-container">
+      <!-- Header -->
+      <header>
+        <h1>ArcGIS Data Enrichment App</h1>
+        <p>Tapestry Segmentation Analysis</p>
+      </header>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-content">
-          <!-- Input Section -->
-          <div class="input-section">
-            <h2>ZIP Code Analysis</h2>
-            
-            <div class="info-box">
-              <strong>How it works:</strong>
-              Enter a 5-digit ZIP code to get detailed demographic and Tapestry segmentation data for that area. The app uses ArcGIS GeoEnrichment services to provide real-time data.
-            </div>
-
-            <div class="input-group">
-              <label for="zipCodeInput">ZIP Code:</label>
-              <input 
-                type="text" 
-                id="zipCodeInput" 
-                placeholder="Enter 5-digit ZIP code (e.g., 90210)" 
-                maxlength="5" 
-                pattern="[0-9]{5}"
-              />
-            </div>
-            
-            <button id="analyzeBtn" class="btn">Analyze ZIP Code</button>
-          </div>
-
-          <!-- Results Section -->
-          <div class="results-section">
-            <h2>Analysis Results</h2>
-            
-            <!-- Loading State -->
-            <div id="loadingState" class="loading" style="display: none;">
-              <div class="spinner"></div>
-              <p>Analyzing ZIP code...</p>
-            </div>
-
-            <!-- Error State -->
-            <div id="errorState" class="error">
-              <strong>Error:</strong> <span id="errorMessage"></span>
-            </div>
-
-            <!-- Results Card -->
-            <div id="resultsCard" class="tapestry-card">
-              <div class="card-header">
-                <h3 class="card-title">Tapestry Segmentation</h3>
-                <span id="zipCodeDisplay" class="zip-code">ZIP</span>
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-content">
+            <!-- Input Section -->
+            <div class="input-section">
+              <h2>ZIP Code Analysis</h2>
+              
+              <div class="info-box">
+                <strong>How it works:</strong>
+                Enter a 5-digit ZIP code to get detailed demographic and Tapestry segmentation data for that area. The app uses ArcGIS GeoEnrichment services to provide real-time data.
               </div>
 
-              <!-- Demographics -->
-              <div class="demographics-grid">
-                <div class="demographic-item">
-                  <h4>Total Population</h4>
-                  <div id="totalPopulation" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Median Age</h4>
-                  <div id="medianAge" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Median Income</h4>
-                  <div id="medianIncome" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Home Ownership</h4>
-                  <div id="homeOwnership" class="value">-</div>
-                </div>
+              <div class="input-group">
+                <label for="zipCodeInput">ZIP Code:</label>
+                <input 
+                  type="text" 
+                  id="zipCodeInput" 
+                  placeholder="Enter 5-digit ZIP code (e.g., 90210)" 
+                  maxlength="5" 
+                  pattern="[0-9]{5}"
+                />
+              </div>
+              
+              <button id="analyzeBtn" class="btn">Analyze ZIP Code</button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+              <h2>Analysis Results</h2>
+              
+              <!-- Loading State -->
+              <div id="loadingState" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing ZIP code...</p>
               </div>
 
-              <!-- Tapestry Segments -->
-              <div class="tapestry-segments">
-                <h4>Tapestry Segments</h4>
-                <div id="tapestrySegments">
-                  <p style="color: #666; font-style: italic;">Enter a ZIP code to see Tapestry segmentation data</p>
+              <!-- Error State -->
+              <div id="errorState" class="error">
+                <strong>Error:</strong> <span id="errorMessage"></span>
+              </div>
+
+              <!-- Results Card -->
+              <div id="resultsCard" class="tapestry-card">
+                <div class="card-header">
+                  <h3 class="card-title">Tapestry Segmentation</h3>
+                  <span id="zipCodeDisplay" class="zip-code">ZIP</span>
+                </div>
+
+                <!-- Demographics -->
+                <div class="demographics-grid">
+                  <div class="demographic-item">
+                    <h4>Total Population</h4>
+                    <div id="totalPopulation" class="value">-</div>
+                  </div>
+                  <div class="demographic-item">
+                    <h4>Median Age</h4>
+                    <div id="medianAge" class="value">-</div>
+                  </div>
+                  <div class="demographic-item">
+                    <h4>Median Income</h4>
+                    <div id="medianIncome" class="value">-</div>
+                  </div>
+                  <div class="demographic-item">
+                    <h4>Home Ownership</h4>
+                    <div id="homeOwnership" class="value">-</div>
+                  </div>
+                </div>
+
+                <!-- Tapestry Segments -->
+                <div class="tapestry-segments">
+                  <h4>Tapestry Segments</h4>
+                  <div id="tapestrySegments">
+                    <p style="color: #666; font-style: italic;">Enter a ZIP code to see Tapestry segmentation data</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Map Container -->
-      <div class="map-container">
-        <arcgis-map 
-          id="mapView"
-          basemap="arcgis/streets-vector" 
-          center="-98.5795, 39.8283" 
-          zoom="4">
-          <arcgis-zoom position="top-left"></arcgis-zoom>
-          <arcgis-search position="top-right"></arcgis-search>
-          <arcgis-home position="top-left"></arcgis-home>
-        </arcgis-map>
         
-        <!-- Debug Panel -->
-        <div id="debugPanel" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; font-size: 12px; max-width: 300px; z-index: 1000;">
-          <div><strong>Map Debug Info:</strong></div>
-          <div id="mapStatus">Initializing...</div>
-          <div id="mapViewStatus">MapView: Not ready</div>
-          <button onclick="toggleDebugPanel()" style="margin-top: 5px; padding: 2px 8px; font-size: 10px;">Toggle Debug</button>
+        <!-- Map Container -->
+        <div class="map-container">
+          <arcgis-map 
+            id="mapView"
+            basemap="arcgis/streets-vector" 
+            center="-98.5795, 39.8283" 
+            zoom="4">
+            <arcgis-zoom position="top-left"></arcgis-zoom>
+            <arcgis-search position="top-right"></arcgis-search>
+            <arcgis-home position="top-left"></arcgis-home>
+          </arcgis-map>
+          
+          <!-- Debug Panel -->
+          <div id="debugPanel" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; font-size: 12px; max-width: 300px; z-index: 1000;">
+            <div><strong>Map Debug Info:</strong></div>
+            <div id="mapStatus">Initializing...</div>
+            <div id="mapViewStatus">MapView: Not ready</div>
+            <button onclick="toggleDebugPanel()" style="margin-top: 5px; padding: 2px 8px; font-size: 10px;">Toggle Debug</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Custom JavaScript -->
-  <script src="app.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
