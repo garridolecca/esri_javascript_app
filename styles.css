@@ -297,6 +297,14 @@ header p {
 .map-container {
   flex: 1;
   position: relative;
+  min-height: 400px;
+  background: #f0f0f0;
+}
+
+arcgis-map {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
 }
 
 /* Responsive Design */

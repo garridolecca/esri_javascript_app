@@ -88,6 +88,30 @@ async function setupMap() {
       console.log('Map view found after timeout:', mapView);
       updateMapStatus('Map View Found After Timeout');
       updateMapViewStatus('MapView: Found after timeout');
+      
+      // Check if the map is actually rendering
+      if (mapView && mapView.map) {
+        console.log('Map object found:', mapView.map);
+        updateMapStatus('Map Object Found - Should be visible');
+        
+        // Force a refresh of the map view
+        mapView.when(() => {
+          console.log('Map view is ready and should be visible');
+          updateMapStatus('Map View Ready and Visible');
+          
+          // Check map visibility after a short delay
+          setTimeout(() => {
+            checkMapVisibility();
+          }, 1000);
+        }).catch(error => {
+          console.error('Map view error:', error);
+          updateMapStatus('Map View Error: ' + error.message);
+        });
+      } else {
+        console.warn('Map view found but no map object, trying fallback...');
+        updateMapStatus('No Map Object - Using Fallback');
+        setupFallbackMap();
+      }
     } else {
       console.warn('Map Components not working, trying fallback...');
       updateMapStatus('Trying fallback map...');
@@ -187,12 +211,81 @@ function toggleDebugPanel() {
   }
 }
 
+// Check if map is visible
+function checkMapVisibility() {
+  const mapElement = document.getElementById('mapView');
+  if (mapElement) {
+    const rect = mapElement.getBoundingClientRect();
+    console.log('Map element dimensions:', {
+      width: rect.width,
+      height: rect.height,
+      top: rect.top,
+      left: rect.left,
+      visible: rect.width > 0 && rect.height > 0
+    });
+    
+    const computedStyle = window.getComputedStyle(mapElement);
+    console.log('Map element styles:', {
+      display: computedStyle.display,
+      visibility: computedStyle.visibility,
+      width: computedStyle.width,
+      height: computedStyle.height,
+      position: computedStyle.position
+    });
+    
+    updateMapStatus(`Map dimensions: ${rect.width}x${rect.height}, visible: ${rect.width > 0 && rect.height > 0}`);
+  }
+}
+
 // Setup event listeners
 function setupEventListeners() {
   analyzeBtn.addEventListener('click', analyzeZipCode);
   zipCodeInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') analyzeZipCode();
   });
+  
+  // Add a test button to the debug panel
+  setTimeout(() => {
+    const debugPanel = document.getElementById('debugPanel');
+    if (debugPanel) {
+      const testButton = document.createElement('button');
+      testButton.textContent = 'Test Basic Map';
+      testButton.style.cssText = 'margin-top: 5px; padding: 2px 8px; font-size: 10px; margin-left: 5px;';
+      testButton.onclick = testBasicMap;
+      debugPanel.appendChild(testButton);
+    }
+  }, 2000);
+}
+
+// Test basic map functionality
+async function testBasicMap() {
+  console.log('Testing basic map...');
+  updateMapStatus('Testing basic map...');
+  
+  try {
+    // Try to create a simple map using the traditional approach
+    const { Map } = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+    const { MapView } = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+    
+    const map = new Map({
+      basemap: "arcgis/streets-vector"
+    });
+    
+    const view = new MapView({
+      container: "mapView",
+      map: map,
+      zoom: 4,
+      center: [-98.5795, 39.8283]
+    });
+    
+    console.log('Basic map created successfully:', view);
+    updateMapStatus('Basic map test successful');
+    mapView = view;
+    
+  } catch (error) {
+    console.error('Basic map test failed:', error);
+    updateMapStatus('Basic map test failed: ' + error.message);
+  }
 }
 
 // Analyze ZIP code function
