@@ -6,6 +6,10 @@ let mapView;
 let currentGraphics = [];
 let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
 
+// Debug elements
+const mapDebug = document.getElementById('mapDebug');
+const mapStatus = document.getElementById('mapStatus');
+
 // DOM elements
 const addressInput = document.getElementById('addressInput');
 const searchAddressBtn = document.getElementById('searchAddressBtn');
@@ -31,29 +35,108 @@ async function init() {
         setTimeout(() => {
             showNotification('Welcome to Tapestry Segmentation Analyzer! Enter an address or upload a CSV to get started.', 'info');
         }, 1000);
+        
+        // Check if map is working after 2 seconds
+        setTimeout(() => {
+            if (!mapView) {
+                console.warn('Map Components not working, trying fallback approach...');
+                setupFallbackMap();
+            }
+        }, 2000);
+        
     } catch (error) {
         console.error('Initialization error:', error);
         showNotification('Error initializing the application. Please check your API key.', 'error');
     }
 }
 
+// Fallback map setup using traditional approach
+async function setupFallbackMap() {
+    try {
+        console.log('Setting up fallback map...');
+        updateMapStatus('Setting up fallback map...');
+        
+        // Import required modules
+        const { Map } = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+        const { MapView } = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+        
+        // Create the map
+        const map = new Map({
+            basemap: "arcgis/streets-vector"
+        });
+        
+        // Create the map view
+        mapView = new MapView({
+            container: "mapView",
+            map: map,
+            zoom: 4,
+            center: [-98.5795, 39.8283] // Center of USA
+        });
+        
+        console.log('Fallback map view created:', mapView);
+        updateMapStatus('Fallback Map Ready');
+        
+    } catch (error) {
+        console.error('Error setting up fallback map:', error);
+        updateMapStatus('Fallback Map Error: ' + error.message);
+    }
+}
+
 // Setup the map using Map Components
 async function setupMap() {
+    console.log('Setting up map...');
+    updateMapStatus('Initializing...');
+    
     // Wait for the map component to be ready
     const mapElement = document.getElementById('mapView');
     
+    if (!mapElement) {
+        console.error('Map element not found!');
+        updateMapStatus('Error: Map element not found');
+        return;
+    }
+    
+    console.log('Map element found:', mapElement);
+    updateMapStatus('Map element found');
+    
     // Listen for the map to be ready
     mapElement.addEventListener('arcgisViewReadyChange', (event) => {
+        console.log('arcgisViewReadyChange event:', event);
         if (event.detail) {
             mapView = event.detail;
             console.log('Map view is ready:', mapView);
+            updateMapStatus('Map Components Ready');
         }
     });
     
     // Also try to get the view directly
     if (mapElement.view) {
         mapView = mapElement.view;
+        console.log('Map view found directly:', mapView);
+        updateMapStatus('Map View Found Directly');
     }
+    
+    // Wait a bit for the component to initialize
+    setTimeout(() => {
+        if (mapElement.view) {
+            mapView = mapElement.view;
+            console.log('Map view found after timeout:', mapView);
+            updateMapStatus('Map View Found After Timeout');
+        } else {
+            updateMapStatus('Map Components Not Ready');
+        }
+    }, 1000);
+}
+
+// Update map status for debugging
+function updateMapStatus(status) {
+    if (mapStatus) {
+        mapStatus.textContent = status;
+        if (mapDebug) {
+            mapDebug.style.display = 'block';
+        }
+    }
+    console.log('Map Status:', status);
 }
 
 // Setup event listeners
