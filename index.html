@@ -351,6 +351,7 @@
             </div>
             
             <button id="analyzeBtn" class="btn">Analyze ZIP Code</button>
+            <button id="testMapBtn" class="btn" style="margin-top: 10px; background: #28a745;">Test Map Centering</button>
           </div>
 
           <!-- Results Section -->
@@ -451,7 +452,23 @@
         mapElement.addEventListener('arcgisViewReadyChange', (event) => {
           console.log('Map view ready event:', event);
           console.log('Map view:', mapElement.view);
+          
+          // Show map ready status
+          const testBtn = document.getElementById('testMapBtn');
+          if (testBtn) {
+            testBtn.textContent = '✅ Map Ready - Test Centering';
+            testBtn.style.background = '#28a745';
+          }
         });
+        
+        // Check if map is already ready
+        if (mapElement.view) {
+          const testBtn = document.getElementById('testMapBtn');
+          if (testBtn) {
+            testBtn.textContent = '✅ Map Ready - Test Centering';
+            testBtn.style.background = '#28a745';
+          }
+        }
       } else {
         console.log('Map element not found, showing fallback');
         document.getElementById('mapFallback').style.display = 'block';
@@ -476,6 +493,24 @@
     analyzeBtn.addEventListener('click', analyzeZipCode);
     zipCodeInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') analyzeZipCode();
+    });
+    
+    // Test map centering
+    document.getElementById('testMapBtn').addEventListener('click', async () => {
+      console.log('Testing map centering...');
+      await waitForMapReady();
+      
+      const mapElement = document.querySelector('arcgis-map');
+      if (mapElement && mapElement.view) {
+        console.log('Testing map centering to Los Angeles...');
+        await mapElement.view.goTo({
+          target: { longitude: -118.2437, latitude: 34.0522 },
+          zoom: 10
+        });
+        console.log('Map centering test completed');
+      } else {
+        console.error('Map not available for testing');
+      }
     });
 
     // Analyze ZIP code function
@@ -676,6 +711,52 @@
       resultsCard.classList.remove('active');
     }
 
+    // Wait for map to be ready
+    async function waitForMapReady() {
+      return new Promise((resolve) => {
+        const mapElement = document.querySelector('arcgis-map');
+        
+        if (mapElement && mapElement.view) {
+          console.log('Map is already ready');
+          resolve();
+          return;
+        }
+        
+        console.log('Waiting for map to be ready...');
+        
+        // Check every 100ms for up to 10 seconds
+        let attempts = 0;
+        const maxAttempts = 100;
+        
+        const checkMap = () => {
+          attempts++;
+          const mapElement = document.querySelector('arcgis-map');
+          
+          console.log(`Map check attempt ${attempts}:`, {
+            element: !!mapElement,
+            view: !!mapElement?.view,
+            ready: mapElement?.ready
+          });
+          
+          if (mapElement && mapElement.view) {
+            console.log('Map is now ready!');
+            resolve();
+            return;
+          }
+          
+          if (attempts >= maxAttempts) {
+            console.warn('Map did not become ready within timeout');
+            resolve();
+            return;
+          }
+          
+          setTimeout(checkMap, 100);
+        };
+        
+        checkMap();
+      });
+    }
+
     // Center map on ZIP code location
     async function centerMapOnZipCode(zipCode) {
       try {
@@ -705,6 +786,9 @@
           
           console.log('ZIP code location found:', location);
           
+          // Wait for map to be ready and then center it
+          await waitForMapReady();
+          
           // Get the map view from the arcgis-map element
           const mapElement = document.querySelector('arcgis-map');
           console.log('Map element found for centering:', mapElement);
@@ -712,7 +796,7 @@
           
           if (mapElement && mapElement.view) {
             // Center map on location
-            mapElement.view.goTo({
+            await mapElement.view.goTo({
               target: location,
               zoom: 12
             });
