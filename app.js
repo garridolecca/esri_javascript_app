@@ -18,8 +18,19 @@ const tapestrySegments = document.getElementById('tapestrySegments');
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
   console.log('App initializing...');
-  setupMap();
-  setupEventListeners();
+  console.log('ArcGIS Config:', esriConfig);
+  
+  // Check if ArcGIS is loaded
+  if (typeof require === 'undefined') {
+    console.log('ArcGIS API not loaded, waiting...');
+    setTimeout(() => {
+      setupMap();
+      setupEventListeners();
+    }, 1000);
+  } else {
+    setupMap();
+    setupEventListeners();
+  }
 });
 
 // Setup map
@@ -36,7 +47,20 @@ async function setupMap() {
   }
   
   console.log('Map element found:', mapElement);
+  console.log('Map element tag name:', mapElement.tagName);
+  console.log('Map element attributes:', mapElement.attributes);
   updateMapStatus('Map element found');
+  
+  // Check if Map Components are loaded
+  if (typeof customElements !== 'undefined' && customElements.get('arcgis-map')) {
+    console.log('Map Components are available');
+    updateMapStatus('Map Components Available');
+  } else {
+    console.warn('Map Components not available, using fallback');
+    updateMapStatus('Map Components Not Available - Using Fallback');
+    setupFallbackMap();
+    return;
+  }
   
   // Listen for the map to be ready
   mapElement.addEventListener('arcgisViewReadyChange', (event) => {
@@ -69,7 +93,7 @@ async function setupMap() {
       updateMapStatus('Trying fallback map...');
       setupFallbackMap();
     }
-  }, 2000);
+  }, 3000);
 }
 
 // Fallback map setup
@@ -78,9 +102,25 @@ async function setupFallbackMap() {
     console.log('Setting up fallback map...');
     updateMapStatus('Setting up fallback map...');
     
-    // Import required modules
-    const { Map } = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
-    const { MapView } = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+    // Try different import methods
+    let Map, MapView;
+    
+    try {
+      // Method 1: Direct import
+      const mapModule = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+      const viewModule = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+      Map = mapModule.Map;
+      MapView = viewModule.MapView;
+    } catch (importError) {
+      console.log('Direct import failed, trying require...');
+      // Method 2: Require (if available)
+      if (typeof require !== 'undefined') {
+        Map = require('@arcgis/core/Map').default;
+        MapView = require('@arcgis/core/views/MapView').default;
+      } else {
+        throw new Error('No import method available');
+      }
+    }
     
     // Create the map
     const map = new Map({
@@ -102,6 +142,25 @@ async function setupFallbackMap() {
   } catch (error) {
     console.error('Error setting up fallback map:', error);
     updateMapStatus('Fallback Map Error: ' + error.message);
+    
+    // Try simple div-based map as last resort
+    try {
+      const mapContainer = document.getElementById('mapView');
+      if (mapContainer) {
+        mapContainer.innerHTML = `
+          <div style="width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">
+            <div style="text-align: center;">
+              <h3>Map Loading...</h3>
+              <p>If the map doesn't appear, check your internet connection and API key.</p>
+              <p>Debug Info: ${error.message}</p>
+            </div>
+          </div>
+        `;
+        updateMapStatus('Simple Fallback Map');
+      }
+    } catch (simpleError) {
+      console.error('Even simple fallback failed:', simpleError);
+    }
   }
 }
 
