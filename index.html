@@ -418,11 +418,22 @@
             <arcgis-search position="top-right"></arcgis-search>
             <arcgis-home position="top-left"></arcgis-home>
           </arcgis-map>
+          
+          <!-- Debug Panel -->
+          <div id="debugPanel" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; font-size: 12px; max-width: 300px; z-index: 1000;">
+            <div><strong>Map Debug Info:</strong></div>
+            <div id="mapStatus">Initializing...</div>
+            <div id="mapViewStatus">MapView: Not ready</div>
+            <button onclick="toggleDebugPanel()" style="margin-top: 5px; padding: 2px 8px; font-size: 10px;">Toggle Debug</button>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
+      // Global variables
+      let mapView;
+      
       // DOM elements
       const zipCodeInput = document.getElementById('zipCodeInput');
       const analyzeBtn = document.getElementById('analyzeBtn');
@@ -437,11 +448,126 @@
       const homeOwnership = document.getElementById('homeOwnership');
       const tapestrySegments = document.getElementById('tapestrySegments');
 
-      // Event listeners
-      analyzeBtn.addEventListener('click', analyzeZipCode);
-      zipCodeInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') analyzeZipCode();
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('App initializing...');
+        setupMap();
+        setupEventListeners();
       });
+
+      // Setup map
+      async function setupMap() {
+        console.log('Setting up map...');
+        updateMapStatus('Setting up map...');
+        
+        const mapElement = document.getElementById('mapView');
+        
+        if (!mapElement) {
+          console.error('Map element not found!');
+          updateMapStatus('Error: Map element not found');
+          return;
+        }
+        
+        console.log('Map element found:', mapElement);
+        updateMapStatus('Map element found');
+        
+        // Listen for the map to be ready
+        mapElement.addEventListener('arcgisViewReadyChange', (event) => {
+          console.log('arcgisViewReadyChange event:', event);
+          if (event.detail) {
+            mapView = event.detail;
+            console.log('Map view is ready:', mapView);
+            updateMapStatus('Map Components Ready');
+            updateMapViewStatus('MapView: Ready');
+          }
+        });
+        
+        // Also try to get the view directly
+        if (mapElement.view) {
+          mapView = mapElement.view;
+          console.log('Map view found directly:', mapView);
+          updateMapStatus('Map View Found Directly');
+          updateMapViewStatus('MapView: Found directly');
+        }
+        
+        // Wait a bit for the component to initialize
+        setTimeout(() => {
+          if (mapElement.view) {
+            mapView = mapElement.view;
+            console.log('Map view found after timeout:', mapView);
+            updateMapStatus('Map View Found After Timeout');
+            updateMapViewStatus('MapView: Found after timeout');
+          } else {
+            console.warn('Map Components not working, trying fallback...');
+            updateMapStatus('Trying fallback map...');
+            setupFallbackMap();
+          }
+        }, 2000);
+      }
+
+      // Fallback map setup
+      async function setupFallbackMap() {
+        try {
+          console.log('Setting up fallback map...');
+          updateMapStatus('Setting up fallback map...');
+          
+          // Import required modules
+          const { Map } = await import('https://js.arcgis.com/4.33/@arcgis/core/Map.js');
+          const { MapView } = await import('https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js');
+          
+          // Create the map
+          const map = new Map({
+            basemap: "arcgis/streets-vector"
+          });
+          
+          // Create the map view
+          mapView = new MapView({
+            container: "mapView",
+            map: map,
+            zoom: 4,
+            center: [-98.5795, 39.8283] // Center of USA
+          });
+          
+          console.log('Fallback map view created:', mapView);
+          updateMapStatus('Fallback Map Ready');
+          updateMapViewStatus('MapView: Fallback ready');
+          
+        } catch (error) {
+          console.error('Error setting up fallback map:', error);
+          updateMapStatus('Fallback Map Error: ' + error.message);
+        }
+      }
+
+      // Debug panel functions
+      function updateMapStatus(status) {
+        const mapStatusElement = document.getElementById('mapStatus');
+        if (mapStatusElement) {
+          mapStatusElement.textContent = status;
+        }
+        console.log('Map Status:', status);
+      }
+
+      function updateMapViewStatus(status) {
+        const mapViewStatusElement = document.getElementById('mapViewStatus');
+        if (mapViewStatusElement) {
+          mapViewStatusElement.textContent = status;
+        }
+      }
+
+      function toggleDebugPanel() {
+        const debugPanel = document.getElementById('debugPanel');
+        if (debugPanel) {
+          debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+        }
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+        analyzeBtn.addEventListener('click', analyzeZipCode);
+        zipCodeInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') analyzeZipCode();
+        });
+      }
 
       // Analyze ZIP code function
       async function analyzeZipCode() {
@@ -539,6 +665,55 @@
         
         // Update Tapestry segments
         displayTapestrySegments(data);
+        
+        // Try to center map on ZIP code location
+        centerMapOnZipCode(zipCode);
+      }
+
+      // Center map on ZIP code location
+      async function centerMapOnZipCode(zipCode) {
+        if (!mapView) {
+          console.warn('Map view not available for centering');
+          return;
+        }
+
+        try {
+          console.log('Centering map on ZIP code:', zipCode);
+          
+          // Get ZIP code coordinates using geocoding
+          const geocodeUrl = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates';
+          const params = new URLSearchParams({
+            f: 'json',
+            singleLine: zipCode,
+            outFields: '*',
+            maxLocations: 1
+          });
+          
+          const response = await fetch(`${geocodeUrl}?${params.toString()}`);
+          const data = await response.json();
+          
+          if (data.candidates && data.candidates.length > 0) {
+            const candidate = data.candidates[0];
+            const location = {
+              longitude: candidate.location.x,
+              latitude: candidate.location.y
+            };
+            
+            console.log('ZIP code location found:', location);
+            
+            // Center map on location
+            mapView.goTo({
+              target: location,
+              zoom: 12
+            });
+            
+            console.log('Map centered on ZIP code location');
+          } else {
+            console.warn('Could not find coordinates for ZIP code:', zipCode);
+          }
+        } catch (error) {
+          console.error('Error centering map on ZIP code:', error);
+        }
       }
 
       // Display Tapestry segments
