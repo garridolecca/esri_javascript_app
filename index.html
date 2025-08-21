@@ -1,894 +1,482 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>ArcGIS Data Enrichment App - Tapestry Segmentation</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS Map with Search</title>
+  
   <style>
-    html,
-    body {
+    :root {
+      /* CSS HEX */
+      --midnight-green: #023c40ff;
+      --rosy-brown: #c3979fff;
+      --vivid-sky-blue: #0ad3ffff;
+      --aquamarine: #78ffd6ff;
+      --light-cyan: #e1faf9ff;
+    }
+    
+    html, body {
       height: 100%;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--light-cyan);
     }
-
-    .app-container {
+    
+    .container {
       display: flex;
-      flex-direction: column;
       height: 100vh;
     }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .header p {
-      margin: 0.5rem 0 0 0;
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    .main-content {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
+    
     .sidebar {
-      width: 400px;
-      background: white;
-      border-right: 1px solid #e1e5e9;
+      width: 300px;
+      background: linear-gradient(135deg, var(--midnight-green), var(--vivid-sky-blue));
+      border-right: 3px solid var(--aquamarine);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
-
-    .sidebar-content {
-      padding: 1.5rem;
-      overflow-y: auto;
-      flex: 1;
+    
+    .header {
+      padding: 20px;
+      background: var(--midnight-green);
+      color: var(--aquamarine);
+      text-align: center;
+      border-bottom: 2px solid var(--vivid-sky-blue);
     }
-
-    .input-section {
-      margin-bottom: 2rem;
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
-
-    .input-section h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #333;
+    
+    .controls {
+      padding: 20px;
+      border-bottom: 2px solid var(--vivid-sky-blue);
+      background: rgba(255, 255, 255, 0.1);
     }
-
+    
     .input-group {
-      margin-bottom: 1rem;
+      margin-bottom: 15px;
     }
-
+    
     .input-group label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #555;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--aquamarine);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
-
+    
     .input-group input {
       width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e1e5e9;
+      padding: 12px;
+      border: 2px solid var(--vivid-sky-blue);
       border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      font-size: 14px;
       box-sizing: border-box;
+      background: var(--light-cyan);
+      color: var(--midnight-green);
+      transition: all 0.3s ease;
     }
-
+    
     .input-group input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: var(--aquamarine);
+      box-shadow: 0 0 10px rgba(120, 255, 214, 0.5);
     }
-
+    
     .btn {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
       width: 100%;
+      padding: 12px;
+      background: linear-gradient(45deg, var(--vivid-sky-blue), var(--aquamarine));
+      color: var(--midnight-green);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
     }
-
+    
     .btn:hover {
+      background: linear-gradient(45deg, var(--aquamarine), var(--vivid-sky-blue));
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 15px rgba(10, 211, 255, 0.4);
     }
-
+    
     .btn:disabled {
-      background: #ccc;
+      background: var(--rosy-brown);
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
     }
-
+    
+    .btn-secondary {
+      background: linear-gradient(45deg, var(--rosy-brown), #d4a5a5);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(45deg, #d4a5a5, var(--rosy-brown));
+    }
+    
+    .info-panel {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .info-item {
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid var(--vivid-sky-blue);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      border-color: var(--aquamarine);
+    }
+    
+    .info-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--midnight-green);
+      font-size: 16px;
+    }
+    
+    .info-value {
+      color: var(--midnight-green);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
     .map-container {
       flex: 1;
       position: relative;
+      background: var(--light-cyan);
     }
-
-    .results-section {
-      margin-top: 2rem;
+    
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+      border-radius: 0;
     }
-
-    .results-section h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #333;
-    }
-
-    .tapestry-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      border-left: 4px solid #667eea;
-      display: none;
-    }
-
-    .tapestry-card.active {
-      display: block;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #333;
-      margin: 0;
-    }
-
-    .zip-code {
-      background: #667eea;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .demographics-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .demographic-item {
-      background: #f8f9fa;
-      padding: 1rem;
+    
+    .status {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      padding: 12px;
       border-radius: 8px;
-      text-align: center;
-    }
-
-    .demographic-item h4 {
-      color: #667eea;
-      margin: 0 0 0.5rem 0;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .demographic-item .value {
-      font-size: 1.2rem;
+      font-size: 14px;
+      z-index: 1000;
+      display: none;
       font-weight: bold;
-      color: #333;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
-
-    .tapestry-segments {
-      margin-top: 1rem;
+    
+    .status.success {
+      background: linear-gradient(45deg, var(--aquamarine), var(--vivid-sky-blue));
+      color: var(--midnight-green);
+      border: 2px solid var(--aquamarine);
     }
-
-    .tapestry-segments h4 {
-      color: #667eea;
-      margin: 0 0 1rem 0;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    
+    .status.error {
+      background: linear-gradient(45deg, var(--rosy-brown), #d4a5a5);
+      color: white;
+      border: 2px solid var(--rosy-brown);
     }
-
-    .segment-item {
-      background: #f8f9fa;
-      padding: 0.75rem;
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
-      border-left: 3px solid #667eea;
+    
+    .status.info {
+      background: linear-gradient(45deg, var(--vivid-sky-blue), var(--aquamarine));
+      color: var(--midnight-green);
+      border: 2px solid var(--vivid-sky-blue);
     }
-
-    .segment-item h5 {
-      margin: 0 0 0.25rem 0;
-      font-size: 0.9rem;
-      color: #333;
+    
+    /* Custom scrollbar for info panel */
+    .info-panel::-webkit-scrollbar {
+      width: 8px;
     }
-
-    .segment-item p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: #666;
+    
+    .info-panel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
     }
-
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: #666;
+    
+    .info-panel::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, var(--vivid-sky-blue), var(--aquamarine));
+      border-radius: 4px;
     }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .error {
-      background: #fee;
-      color: #c33;
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid #c33;
-      margin-bottom: 1rem;
-      display: none;
-    }
-
-    .error.active {
-      display: block;
-    }
-
-    .info-box {
-      background: #e3f2fd;
-      color: #1976d2;
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid #1976d2;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-      .main-content {
-        flex-direction: column;
-      }
-      
-      .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 300px;
-      }
-      
-      .map-container {
-        height: 400px;
-      }
-
-      .demographics-grid {
-        grid-template-columns: 1fr;
-      }
+    
+    .info-panel::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, var(--aquamarine), var(--vivid-sky-blue));
     }
   </style>
-
-      <script>
-      var esriConfig = {
-        apiKey: "AAPT85fOqywZsicJupSmVSCGrhwxbRrmDP89Tr8jhIl2ka6wFYHD5U8QTHcRMCoBLPxtmd4ZZsi1qAu93ffXFVNJ2dEDmuUhqvdbo4ipgwNszTk3wtO873AO7638UOZstZ1EZ_sqvIyVCuqvdSBD5GKp3HJo1Ds3AgNWGC08ZxyPEUJBaoxVdCiQqy988YY5FRVZpPQuhowsndy7Bz5O38mMaH4Qug_wWGrqwL2MOkNF7Evr3SV4xr-nFD7MBIzD6SkJAT2_VQn5OsAR"
-      };
-    </script>
-
-  <!-- Load Calcite components from CDN -->
-  <script type="module" src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"></script>
-
-  <!-- Load the ArcGIS Maps SDK for JavaScript from CDN -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
+  
+  <script>
+    var esriConfig = {
+      apiKey: "AAPTxy8BH1VEsoebNVZXo8HurHudtAypLm328sIJojSUcoWK4iawKp87GbOMcJ3USNJwbKiZIm2YQTVIk_silIENMrs3wT80o-C9t5-McM9S35_t7YfygIdGEwwNTU1Hw5u4yTu9iaGR0sQgb98joVojRH5bWqquYiXzEIs-wyIVxOzfl2_Iz0ZIre5NJ8Gzb1jfoPILviylmtTC81yrRu3GC1yYbTIplq0E2-JE8SPzLGsO-H8neNEIhpfVs5I2JAOlAT1_VQn5OsAR"
+    };
+  </script>
+  
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css">
   <script src="https://js.arcgis.com/4.33/"></script>
-
-  <!-- Load Map components from CDN-->
-  <script type="module" src="https://js.arcgis.com/4.33/map-components/"></script>
 </head>
 
 <body>
-  <div class="app-container">
-    <!-- Header -->
-    <div class="header">
-      <h1>🗺️ ArcGIS Data Enrichment App</h1>
-      <p>Enter a ZIP code to get Tapestry segmentation and demographic data</p>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-content">
-          <!-- Input Section -->
-          <div class="input-section">
-            <h2>📍 ZIP Code Analysis</h2>
-            <div class="info-box">
-              <strong>How it works:</strong> Enter a US ZIP code to get detailed demographic and Tapestry segmentation data for that area.
-            </div>
-            
-            <div class="input-group">
-              <label for="zipCodeInput">ZIP Code:</label>
-              <input 
-                type="text" 
-                id="zipCodeInput" 
-                placeholder="Enter ZIP code (e.g., 90210)"
-                maxlength="5"
-                pattern="[0-9]{5}"
-              />
-            </div>
-            
-            <button id="analyzeBtn" class="btn">Analyze ZIP Code</button>
-            <button id="testMapBtn" class="btn" style="margin-top: 10px; background: #28a745;">Test Map Centering</button>
-          </div>
-
-          <!-- Results Section -->
-          <div class="results-section">
-            <h2>📊 Analysis Results</h2>
-            
-            <!-- Loading State -->
-            <div id="loadingState" class="loading" style="display: none;">
-              <div class="spinner"></div>
-              <p>Analyzing ZIP code...</p>
-            </div>
-
-            <!-- Error State -->
-            <div id="errorState" class="error">
-              <strong>Error:</strong> <span id="errorMessage"></span>
-            </div>
-
-            <!-- Results Card -->
-            <div id="resultsCard" class="tapestry-card">
-              <div class="card-header">
-                <h3 class="card-title">Tapestry Segmentation</h3>
-                <span id="zipCodeDisplay" class="zip-code">ZIP</span>
-              </div>
-
-              <!-- Demographics -->
-              <div class="demographics-grid">
-                <div class="demographic-item">
-                  <h4>Total Population</h4>
-                  <div id="totalPopulation" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Median Age</h4>
-                  <div id="medianAge" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Median Income</h4>
-                  <div id="medianIncome" class="value">-</div>
-                </div>
-                <div class="demographic-item">
-                  <h4>Home Ownership</h4>
-                  <div id="homeOwnership" class="value">-</div>
-                </div>
-              </div>
-
-              <!-- Tapestry Segments -->
-              <div class="tapestry-segments">
-                <h4>Tapestry Segments</h4>
-                <div id="tapestrySegments">
-                  <p style="color: #666; font-style: italic;">Enter a ZIP code to see Tapestry segmentation data</p>
-                </div>
-              </div>
-            </div>
+  <div class="container">
+    <div class="sidebar">
+      <div class="header">
+        <h1>🗺️ ArcGIS Map with Search</h1>
+      </div>
+      
+      <div class="controls">
+        <div class="input-group">
+          <label for="addressInput">Address:</label>
+          <input type="text" id="addressInput" placeholder="Enter an address..." />
+        </div>
+        
+        <button id="searchBtn" class="btn">Search Address</button>
+        <button id="clearBtn" class="btn btn-secondary">Clear Map</button>
+      </div>
+      
+      <div class="info-panel" id="infoPanel">
+        <div class="info-item">
+          <div class="info-title">Map Status</div>
+          <div class="info-value">Loading map...</div>
+        </div>
+        <div class="info-item">
+          <div class="info-title">Instructions</div>
+          <div class="info-value">Enter an address in the input field above and click "Search Address" to find locations on the map.</div>
+        </div>
+        <div class="info-item">
+          <div class="info-title">Test Examples</div>
+          <div class="info-value">
+            • Seattle<br>
+            • Space Needle<br>
+            • Hollywood Blvd<br>
+            • 1600 Pennsylvania Avenue, Washington, DC<br>
+            • 34.13419, -118.29636
           </div>
         </div>
       </div>
-      
-             <!-- Map Container -->
-       <div class="map-container">
-        <arcgis-map basemap="arcgis/topographic" center="-118.805, 34.027" zoom="13">
-
-          <arcgis-zoom position="top-left"></arcgis-zoom>
+    </div>
     
-        </arcgis-map>
-         
-         <!-- Fallback message if map doesn't load -->
-         
-       </div>
+    <div class="map-container">
+      <div id="viewDiv"></div>
+      <div id="status" class="status"></div>
     </div>
   </div>
 
-  <!-- Simple JavaScript for ZIP code analysis -->
   <script>
-    // Check if ArcGIS is loaded
-    console.log('ArcGIS Config:', esriConfig);
-    console.log('ArcGIS API loaded:', typeof require !== 'undefined');
-    
-    // Check if Map Components are available
-    setTimeout(() => {
-      console.log('Map Components available:', typeof customElements !== 'undefined' && customElements.get('arcgis-map'));
-      const mapElement = document.querySelector('arcgis-map');
-      console.log('Map element found:', mapElement);
-      if (mapElement) {
-        console.log('Map element tag name:', mapElement.tagName);
-        console.log('Map element attributes:', mapElement.attributes);
-        console.log('Map element view:', mapElement.view);
-        console.log('Map element ready:', mapElement.ready);
-        
-        // Check if map is actually visible
-        const rect = mapElement.getBoundingClientRect();
-        console.log('Map dimensions:', rect.width, 'x', rect.height);
-        
-        if (rect.width === 0 || rect.height === 0) {
-          console.log('Map has no dimensions, showing fallback');
-          document.getElementById('mapFallback').style.display = 'block';
-        }
-        
-        // Listen for map ready event
-        mapElement.addEventListener('arcgisViewReadyChange', (event) => {
-          console.log('Map view ready event:', event);
-          console.log('Map view:', mapElement.view);
-          
-          // Show map ready status
-          const testBtn = document.getElementById('testMapBtn');
-          if (testBtn) {
-            testBtn.textContent = '✅ Map Ready - Test Centering';
-            testBtn.style.background = '#28a745';
-          }
-        });
-        
-        // Check if map is already ready
-        if (mapElement.view) {
-          const testBtn = document.getElementById('testMapBtn');
-          if (testBtn) {
-            testBtn.textContent = '✅ Map Ready - Test Centering';
-            testBtn.style.background = '#28a745';
-          }
-        }
-      } else {
-        console.log('Map element not found, showing fallback');
-        document.getElementById('mapFallback').style.display = 'block';
-      }
-    }, 3000);
-    
-    // DOM elements
-    const zipCodeInput = document.getElementById('zipCodeInput');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const loadingState = document.getElementById('loadingState');
-    const errorState = document.getElementById('errorState');
-    const errorMessage = document.getElementById('errorMessage');
-    const resultsCard = document.getElementById('resultsCard');
-    const zipCodeDisplay = document.getElementById('zipCodeDisplay');
-    const totalPopulation = document.getElementById('totalPopulation');
-    const medianAge = document.getElementById('medianAge');
-    const medianIncome = document.getElementById('medianIncome');
-    const homeOwnership = document.getElementById('homeOwnership');
-    const tapestrySegments = document.getElementById('tapestrySegments');
-
-    // Event listeners
-    analyzeBtn.addEventListener('click', analyzeZipCode);
-    zipCodeInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') analyzeZipCode();
-    });
-    
-    // Test map centering
-    document.getElementById('testMapBtn').addEventListener('click', async () => {
-      console.log('Testing map centering...');
-      await waitForMapReady();
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/Search",
+      "esri/Graphic",
+      "esri/geometry/Point",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/TextSymbol"
+    ], function(Map, MapView, Search, Graphic, Point, SimpleMarkerSymbol, TextSymbol) {
       
-      const mapElement = document.querySelector('arcgis-map');
-      if (mapElement && mapElement.view) {
-        console.log('Testing map centering to Los Angeles...');
-        await mapElement.view.goTo({
-          target: { longitude: -118.2437, latitude: 34.0522 },
-          zoom: 10
-        });
-        console.log('Map centering test completed');
-      } else {
-        console.error('Map not available for testing');
-      }
-    });
-
-    // Analyze ZIP code function
-    async function analyzeZipCode() {
-      const zipCode = zipCodeInput.value.trim();
-      
-      // Validate ZIP code
-      if (!zipCode) {
-        showError('Please enter a ZIP code');
-        return;
-      }
-      
-      if (!/^\d{5}$/.test(zipCode)) {
-        showError('Please enter a valid 5-digit ZIP code');
-        return;
-      }
-      
-      // Show loading state
-      showLoading();
-      hideError();
-      hideResults();
-      
-      try {
-        console.log('Analyzing ZIP code:', zipCode);
-        
-        // Get demographic data
-        const data = await getDemographicData(zipCode);
-        
-        if (data && data.length > 0) {
-          const zipData = data[0];
-          console.log('ZIP code data:', zipData);
-          
-          // Display results
-          displayResults(zipCode, zipData);
-          showResults();
-        } else {
-          showError('No data found for this ZIP code');
-        }
-        
-      } catch (error) {
-        console.error('Error analyzing ZIP code:', error);
-        showError('Error fetching data. Please try again.');
-      } finally {
-        hideLoading();
-      }
-    }
-
-    // Get demographic data from ArcGIS GeoEnrichment service
-    async function getDemographicData(zipCode) {
-      const url = 'https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver/Geoenrichment/enrich';
-      
-      const requestBody = {
-        studyAreas: [{
-          sourceCountry: "US",
-          layer: "US.ZIP5",
-          ids: [zipCode]
-        }],
-        dataCollections: [
-          "KeyUSFacts",
-          "US.TapestrySegmentation"
-        ],
-        returnGeometry: false,
-        f: "json"
-      };
-      
-      console.log('Making GeoEnrichment request:', requestBody);
-      
-      // Add API key to the URL
-      const urlWithKey = `${url}?token=${esriConfig.apiKey}`;
-      
-      const response = await fetch(urlWithKey, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
+      // Create the map - following the basic "Display a map" tutorial
+      const map = new Map({
+        basemap: "streets-vector"
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Create the map view - following the basic tutorial
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-122.3321, 47.6062], // Seattle
+        zoom: 12
+      });
       
-      const result = await response.json();
-      console.log('GeoEnrichment response:', result);
+      // Create search widget
+      const searchWidget = new Search({
+        view: view
+      });
       
-      if (result.error) {
-        throw new Error(result.error.message || 'GeoEnrichment service error');
-      }
+      // Add search widget to the view
+      view.ui.add(searchWidget, "top-right");
       
-      return result.results || [];
-    }
-
-    // Display results
-    function displayResults(zipCode, data) {
-      // Update ZIP code display
-      zipCodeDisplay.textContent = zipCode;
+      // Get DOM elements
+      const addressInput = document.getElementById('addressInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const infoPanel = document.getElementById('infoPanel');
+      const statusDiv = document.getElementById('status');
       
-      // Update demographics
-      totalPopulation.textContent = formatNumber(data.TOTPOP || 'N/A');
-      medianAge.textContent = data.MEDIAN_AGE || data.AGE_MEDIAN || 'N/A';
-      medianIncome.textContent = formatCurrency(data.MEDIAN_HOUSEHOLD_INCOME || data.INCOME_MEDIAN || 'N/A');
-      homeOwnership.textContent = formatPercentage(data.HOME_OWNERSHIP_RATE || data.OWNERSHIP_RATE || 'N/A');
-      
-      // Update Tapestry segments
-      displayTapestrySegments(data);
-      
-      // Center map on ZIP code location
-      centerMapOnZipCode(zipCode);
-    }
-
-    // Display Tapestry segments
-    function displayTapestrySegments(data) {
-      const tapestryFields = Object.keys(data).filter(key => 
-        key.includes('Tapestry') || key.includes('Segmentation') || key.includes('Segment')
-      );
-      
-      if (tapestryFields.length > 0) {
-        const segmentsHtml = tapestryFields.map(field => {
-          const value = data[field];
-          if (value && typeof value === 'string' && value.trim() !== '') {
-            return `
-              <div class="segment-item">
-                <h5>${formatFieldName(field)}</h5>
-                <p>${value}</p>
-              </div>
-            `;
-          }
-          return '';
-        }).join('');
+      // Update status function
+      function updateStatus(message, type = 'info') {
+        statusDiv.textContent = message;
+        statusDiv.className = `status ${type}`;
+        statusDiv.style.display = 'block';
         
-        tapestrySegments.innerHTML = segmentsHtml;
-      } else {
-        tapestrySegments.innerHTML = `
-          <div class="segment-item">
-            <h5>Demographic Analysis</h5>
-            <p>Based on available demographic data for this ZIP code</p>
-          </div>
+        setTimeout(() => {
+          statusDiv.style.display = 'none';
+        }, 3000);
+      }
+      
+      // Update info panel
+      function updateInfo(title, value) {
+        const infoItem = document.createElement('div');
+        infoItem.className = 'info-item';
+        infoItem.innerHTML = `
+          <div class="info-title">${title}</div>
+          <div class="info-value">${value}</div>
         `;
+        infoPanel.appendChild(infoItem);
       }
-    }
-
-    // Utility functions
-    function formatNumber(num) {
-      if (num === 'N/A' || num === null || num === undefined) return 'N/A';
-      return new Intl.NumberFormat().format(num);
-    }
-
-    function formatCurrency(amount) {
-      if (amount === 'N/A' || amount === null || amount === undefined) return 'N/A';
-      if (typeof amount === 'string') return amount;
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(amount);
-    }
-
-    function formatPercentage(value) {
-      if (value === 'N/A' || value === null || value === undefined) return 'N/A';
-      if (typeof value === 'string') return value;
-      return value.toFixed(1) + '%';
-    }
-
-    function formatFieldName(fieldName) {
-      return fieldName
-        .replace(/_/g, ' ')
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .trim();
-    }
-
-    // UI state management
-    function showLoading() {
-      loadingState.style.display = 'block';
-      analyzeBtn.disabled = true;
-    }
-
-    function hideLoading() {
-      loadingState.style.display = 'none';
-      analyzeBtn.disabled = false;
-    }
-
-    function showError(message) {
-      errorMessage.textContent = message;
-      errorState.classList.add('active');
-    }
-
-    function hideError() {
-      errorState.classList.remove('active');
-    }
-
-    function showResults() {
-      resultsCard.classList.add('active');
-    }
-
-    function hideResults() {
-      resultsCard.classList.remove('active');
-    }
-
-    // Wait for map to be ready
-    async function waitForMapReady() {
-      return new Promise((resolve) => {
-        const mapElement = document.querySelector('arcgis-map');
+      
+      // Add marker function
+      function addMarker(location, address) {
+        // Clear existing graphics
+        view.graphics.removeAll();
         
-        if (mapElement && mapElement.view) {
-          console.log('Map is already ready');
-          resolve();
+        // Create point geometry
+        const point = new Point({
+          longitude: location.longitude,
+          latitude: location.latitude
+        });
+        
+        // Create marker symbol with custom colors
+        const markerSymbol = new SimpleMarkerSymbol({
+          color: [2, 60, 64, 0.9], // midnight-green with transparency
+          size: 16,
+          outline: {
+            color: [120, 255, 214], // aquamarine
+            width: 3
+          }
+        });
+        
+        // Create text symbol with custom colors
+        const textSymbol = new TextSymbol({
+          color: [120, 255, 214], // aquamarine
+          text: '📍',
+          font: {
+            size: 16,
+            weight: 'bold'
+          },
+          haloColor: [2, 60, 64], // midnight-green
+          haloSize: 2,
+          yoffset: -20
+        });
+        
+        // Create graphics
+        const markerGraphic = new Graphic({
+          geometry: point,
+          symbol: markerSymbol
+        });
+        
+        const textGraphic = new Graphic({
+          geometry: point,
+          symbol: textSymbol
+        });
+        
+        // Add graphics to view
+        view.graphics.add(markerGraphic);
+        view.graphics.add(textGraphic);
+        
+        // Update info panel
+        updateInfo('Last Searched', `Address: ${address}<br>Coordinates: ${location.longitude.toFixed(4)}, ${location.latitude.toFixed(4)}`);
+      }
+      
+      // Search function
+      async function searchAddress() {
+        const address = addressInput.value.trim();
+        
+        if (!address) {
+          updateStatus('Please enter an address.', 'error');
           return;
         }
         
-        console.log('Waiting for map to be ready...');
-        
-        // Check every 100ms for up to 10 seconds
-        let attempts = 0;
-        const maxAttempts = 100;
-        
-        const checkMap = () => {
-          attempts++;
-          const mapElement = document.querySelector('arcgis-map');
+        try {
+          updateStatus('Searching address...', 'info');
+          searchBtn.disabled = true;
+          searchBtn.textContent = 'Searching...';
           
-          console.log(`Map check attempt ${attempts}:`, {
-            element: !!mapElement,
-            view: !!mapElement?.view,
-            ready: mapElement?.ready
-          });
+          // Use the search widget to search
+          const searchResult = await searchWidget.search(address);
           
-          if (mapElement && mapElement.view) {
-            console.log('Map is now ready!');
-            resolve();
-            return;
-          }
-          
-          if (attempts >= maxAttempts) {
-            console.warn('Map did not become ready within timeout');
-            resolve();
-            return;
-          }
-          
-          setTimeout(checkMap, 100);
-        };
-        
-        checkMap();
-      });
-    }
-
-    // Center map on ZIP code location
-    async function centerMapOnZipCode(zipCode) {
-      try {
-        console.log('Centering map on ZIP code:', zipCode);
-        
-        // Get ZIP code coordinates using geocoding
-        const geocodeUrl = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates';
-        const params = new URLSearchParams({
-          f: 'json',
-          singleLine: zipCode,
-          outFields: '*',
-          maxLocations: 1,
-          token: esriConfig.apiKey
-        });
-        
-        const response = await fetch(`${geocodeUrl}?${params.toString()}`);
-        const data = await response.json();
-        
-        console.log('Geocoding response:', data);
-        
-        if (data.candidates && data.candidates.length > 0) {
-          const candidate = data.candidates[0];
-          const location = {
-            longitude: candidate.location.x,
-            latitude: candidate.location.y
-          };
-          
-          console.log('ZIP code location found:', location);
-          
-          // Wait for map to be ready and then center it
-          await waitForMapReady();
-          
-          // Get the map view from the arcgis-map element
-          const mapElement = document.querySelector('arcgis-map');
-          console.log('Map element found for centering:', mapElement);
-          console.log('Map element view:', mapElement?.view);
-          
-          if (mapElement && mapElement.view) {
-            // Center map on location
-            await mapElement.view.goTo({
-              target: location,
-              zoom: 12
-            });
+          if (searchResult && searchResult.results && searchResult.results.length > 0) {
+            const result = searchResult.results[0];
+            const location = {
+              longitude: result.extent.xmin + (result.extent.xmax - result.extent.xmin) / 2,
+              latitude: result.extent.ymin + (result.extent.ymax - result.extent.ymin) / 2
+            };
             
-            console.log('Map centered on ZIP code location');
+            // Add marker
+            addMarker(location, address);
             
-            // Add a marker at the ZIP code location
-            addZipCodeMarker(location, zipCode);
+            updateStatus(`Found: ${result.name}`, 'success');
           } else {
-            console.warn('Map view not available for centering');
-            console.log('Map element properties:', {
-              tagName: mapElement?.tagName,
-              attributes: mapElement?.attributes,
-              view: mapElement?.view,
-              ready: mapElement?.ready
-            });
+            updateStatus('Address not found. Please try a different address.', 'error');
           }
-        } else {
-          console.warn('Could not find coordinates for ZIP code:', zipCode);
+          
+        } catch (error) {
+          console.error('Search error:', error);
+          updateStatus('Search failed. Please try again.', 'error');
+        } finally {
+          searchBtn.disabled = false;
+          searchBtn.textContent = 'Search Address';
         }
-      } catch (error) {
-        console.error('Error centering map on ZIP code:', error);
       }
-    }
-
-    // Add a marker at the ZIP code location
-    async function addZipCodeMarker(location, zipCode) {
-      try {
-        console.log('Adding marker for ZIP code:', zipCode, 'at location:', location);
+      
+      // Clear map
+      function clearMap() {
+        view.graphics.removeAll();
+        addressInput.value = '';
+        updateStatus('Map cleared', 'success');
         
-        // Import required modules for creating graphics
-        const { Point } = await import('https://js.arcgis.com/4.33/@arcgis/core/geometry/Point.js');
-        const { Graphic } = await import('https://js.arcgis.com/4.33/@arcgis/core/Graphic.js');
-        const { SimpleMarkerSymbol } = await import('https://js.arcgis.com/4.33/@arcgis/core/symbols/SimpleMarkerSymbol.js');
-        const { TextSymbol } = await import('https://js.arcgis.com/4.33/@arcgis/core/symbols/TextSymbol.js');
-        
-        // Get the map view
-        const mapElement = document.querySelector('arcgis-map');
-        if (mapElement && mapElement.view) {
-          // Clear existing graphics
-          mapElement.view.graphics.removeAll();
-          
-          // Create a point geometry
-          const point = new Point({
-            longitude: location.longitude,
-            latitude: location.latitude
-          });
-          
-          // Create a marker symbol
-          const markerSymbol = new SimpleMarkerSymbol({
-            color: [102, 126, 234, 0.8], // Blue color with transparency
-            size: 12,
-            outline: {
-              color: [255, 255, 255],
-              width: 2
-            }
-          });
-          
-          // Create a text symbol for the ZIP code
-          const textSymbol = new TextSymbol({
-            color: [255, 255, 255],
-            text: zipCode,
-            font: {
-              size: 12,
-              weight: 'bold'
-            },
-            haloColor: [102, 126, 234],
-            haloSize: 1,
-            yoffset: -20
-          });
-          
-          // Create graphics
-          const markerGraphic = new Graphic({
-            geometry: point,
-            symbol: markerSymbol
-          });
-          
-          const textGraphic = new Graphic({
-            geometry: point,
-            symbol: textSymbol
-          });
-          
-          // Add graphics to the map
-          mapElement.view.graphics.add(markerGraphic);
-          mapElement.view.graphics.add(textGraphic);
-          
-          console.log('Marker added successfully');
+        // Clear info panel except first three items
+        const items = infoPanel.querySelectorAll('.info-item');
+        for (let i = 3; i < items.length; i++) {
+          items[i].remove();
         }
-      } catch (error) {
-        console.error('Error adding marker:', error);
       }
-    }
+      
+      // Event listeners
+      searchBtn.addEventListener('click', searchAddress);
+      clearBtn.addEventListener('click', clearMap);
+      
+      addressInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          searchAddress();
+        }
+      });
+      
+      // Wait for view to be ready
+      view.when(() => {
+        // Update status when map is loaded
+        updateStatus('Map loaded successfully! Search box is in the top-right corner.', 'success');
+        
+        // Update info panel
+        const statusItem = infoPanel.querySelector('.info-item');
+        if (statusItem) {
+          statusItem.querySelector('.info-value').textContent = 'Ready to use';
+        }
+        
+        console.log('Map view is ready!');
+        console.log('Search widget added to top-right position');
+        
+      }).catch((error) => {
+        console.error('Error loading map view:', error);
+        updateStatus('Error loading map', 'error');
+      });
+      
+    });
   </script>
 </body>
 </html>
