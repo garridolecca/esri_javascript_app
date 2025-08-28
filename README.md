@@ -2,9 +2,7 @@
 
 A beautiful, interactive web application built with the ArcGIS JavaScript API that allows users to search for addresses and places with a stunning ocean-inspired design.
 
-## ✨ Features
-
-### 🎯 Core Functionality
+### Core Functionality
 - **Interactive Map Display** - Powered by ArcGIS JavaScript API 4.33
 - **Address Search** - Search for any address or place name
 - **Real-time Geocoding** - Convert addresses to map coordinates
@@ -26,7 +24,7 @@ A beautiful, interactive web application built with the ArcGIS JavaScript API th
 3. **Clear Results**:
    - Click "Clear Map" to remove markers and reset the interface
 
-## 🛠️ Technical Details
+## Technical Details
 
 ### Built With
 - **ArcGIS JavaScript API 4.33** - Core mapping functionality
@@ -59,9 +57,6 @@ var esriConfig = {
 ### Default Location
 Centered on Seattle, WA with zoom level 12 for good detail.
 
-
-## 🎯 Use Cases
-
 ### Perfect For
 - **Address Lookup** - Find and visualize any address
 - **Location Planning** - Explore areas and neighborhoods
@@ -69,21 +64,11 @@ Centered on Seattle, WA with zoom level 12 for good detail.
 - **Real Estate** - View property locations and surroundings
 - **Travel Planning** - Research destinations and points of interest
 
-
 ## Contributing
-
 This is a personal project showcasing ArcGIS JavaScript API integration with modern web design principles.
 
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
+## Acknowledgments
 - **Esri** - For the powerful ArcGIS JavaScript API
 - **Web Standards** - HTML5, CSS3, and modern JavaScript
-
-
-**Built with ❤️ using ArcGIS JavaScript API and modern web technologies**
 
 *Last updated: August 2025*
